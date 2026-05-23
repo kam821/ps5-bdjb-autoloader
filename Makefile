@@ -109,4 +109,7 @@ $(ISO_FILE): $(DISC_FILES) autoloader poops
 
 clean:
 	rm -rf META-INF *.iso discdir src/jdk/internal/misc/*.class src/org/bdj/*.class src/org/bdj/sandbox/*.class src/org/bdj/api/*.class src/org/bdj/Version.java
-    
+
+.PHONY: print-version
+print-version:
+	@echo $(ISO_VERSION)
