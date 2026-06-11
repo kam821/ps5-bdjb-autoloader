@@ -4,12 +4,12 @@
 <h1 align="center">PS5 BD-JB Autoloader</h1>
 <h3 align="center">Fork of <a href="https://github.com/Gezine/BD-UN-JB">BD-UN-JB</a></h3>
 &nbsp;
-<p align="center">Automatically loads your .elf, .bin and .jar payloads.<br>Supports PS5 firmwares 4.03-12.00. <br><b>Note:</b> To work on firmwares <b>above 7.61</b>, the PS5 must already be jailbroken (requires the <a href="https://github.com/Gezine/BD-UN-JB/releases">bdj_unpatch</a> payload).</p>
+<p align="center">Automatically loads the kernel exploit and your elf payloads.<br>Supports PS5 firmwares 4.03-12.00. <br><b>Note:</b> To work on firmwares <b>above 7.61</b>, the PS5 must already be jailbroken (requires the <a href="https://github.com/Gezine/BD-UN-JB/releases">bdj_unpatch</a> payload).</p>
 
 <p align="center">
     <b>Other Autoloaders:</b><br>
-    <a href="https://github.com/itsPLK/ps5-y2jb-autoloader">PS5 Y2JB Autoloader</a> | 
-    <a href="https://github.com/itsPLK/ps5-lua-autoloader">PS5 Lua Autoloader</a>
+    <a href="https://github.com/itsPLK/ps5-y2jb-autoloader">Y2JB</a> | 
+    <a href="https://github.com/itsPLK/ps5-lua-autoloader">Lua</a>
 </p>
 
 <p align="center">
@@ -19,18 +19,32 @@
 
 ## How to Use
 
+There are two ways to use the autoloader:
+
+### 🟢 Option 1: Payload Manager
+
+If no `autoload.txt` config is found, the autoloader will automatically launch **[Payload Manager](https://github.com/itsPLK/ps5-payload-manager)** — a fully-featured PS5 payload manager with a web UI. This lets you configure and send payloads directly from your browser, without needing to manually set up config files or transfer ELF files ahead of time.
+
+Just run the autoloader — if there's nothing configured, Payload Manager starts automatically.
+
+> **Note:** Payload Manager also has its own built-in autoload feature, which lets you configure payloads to load automatically on startup — all managed through its web UI. This is separate from the `autoload.txt` mechanism described below.
+
+---
+
+### ⚙️ Option 2: Manual Config (`autoload.txt`)
+
+For a fixed, automated payload chain, you can configure payloads manually:
+
 - Create a directory named `ps5_autoloader`.
-- Inside this directory, place your `.elf`, `.bin`, and `.jar` files, and an `autoload.txt` file.
+- Inside this directory, place your `.elf` / `.bin` files, and an `autoload.txt` file.
   - In `autoload.txt`, list the files you want to load, one filename per line.
   - Filenames are case-sensitive — ensure each name exactly matches the file.
   - You can add lines like `!1000` to make the loader wait 1000 ms before sending the next payload.
-  - You can add lines like `@ message` to show a notification on the PS5.
-  - Do NOT include `elfldr.elf` in `autoload.txt` unless you want to override the bundled version; it is loaded automatically when needed for ELF/BIN payloads.
 - Put the `ps5_autoloader` directory in one of these locations (priority order - highest first):
   - Root of a USB drive
   - Internal drive: `/data/ps5_autoloader`
-  - Root of the disc itself.
 
+> **Note:** When an `autoload.txt` config is found, Payload Manager is **not** launched automatically. If you also want Payload Manager available, place `pldmgr.elf` in your `ps5_autoloader` directory and add it to `autoload.txt`.
 
 ## Setup Instructions
 
@@ -64,14 +78,6 @@ elfldr.elf
 # Send other payloads
 ftpsrv.elf
 ```
-</Details>
-
-<Details>
-<Summary><i>etaHEN loading stability issues</i></Summary>
-Sometimes etaHEN will fail to load. It seems that etaHEN/kstuff often won't finish loading until the Disc Player app is closed.
-
-**Recommended Solution:**  
-In default configuration, the autoloader includes Payload Manager. Using it is the most reliable way to load etaHEN/kstuff, as it waits for the Disc Player app to close before loading the payloads. To use it, make pldmgr.elf the only item in your autoload.txt.
 </Details>
 
 ## Credits
