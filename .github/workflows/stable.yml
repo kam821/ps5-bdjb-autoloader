@@ -2,6 +2,22 @@ name: Stable Build and Release
 
 on:
   workflow_dispatch:
+    inputs:
+      elfldr_ver:
+        description: 'ps5-elfldr version'
+        required: true
+        default: 'latest'
+        type: string
+      kexp_ver:
+        description: 'ps5-kexp version'
+        required: true
+        default: 'latest'
+        type: string
+      pldmgr_ver:
+        description: 'ps5-pldmgr version'
+        required: true
+        default: 'latest'
+        type: string
 
 jobs:
   build-and-release:
@@ -19,17 +35,15 @@ jobs:
         uses: docker/setup-buildx-action@v3
 
       - name: Build ISO
-        run: ./build_iso.sh --stable
+        run: ./build_iso.sh --stable --elfldr-ver "${{ inputs.elfldr_ver }}" --kexp-ver "${{ inputs.kexp_ver }}" --pldmgr-ver "${{ inputs.pldmgr_ver }}"
 
       - name: Get Version
         id: get_version
         run: |
           VERSION=$(make print-version BUILD_TYPE=stable)
-          echo "version=${VERSION}" >> $GITHUB_OUTPUT
+          echo "version=${VERSION}-old-kexp" >> $GITHUB_OUTPUT
           TITLE=$(echo "${VERSION}" | cut -d'-' -f1)
-          echo "title=${TITLE}" >> $GITHUB_OUTPUT
-          LAST_STABLE_TAG=$(git tag --sort=-creatordate | grep -v "\-dev\-" | grep -v "^${VERSION}$" | head -n 1)
-          echo "last_stable_tag=${LAST_STABLE_TAG}" >> $GITHUB_OUTPUT
+          echo "title=${TITLE}-old-kexp" >> $GITHUB_OUTPUT
           ELFLDR_VER=$(basename payloads/poops/src/org/bdj/external/elfldr-ps5-*.elf .elf | sed 's/elfldr-ps5-//')
           KEXP_VER=$(basename payloads/poops/src/org/bdj/external/kexp-*.bin .bin | sed 's/kexp-//')
           PLDMGR_VER=$(basename $(ls ps5_autoloader/pldmgr-*.elf ps5_autoloader/pldmgr_v*.elf 2>/dev/null | head -n 1) .elf | sed -E 's/pldmgr[-_v]+//')
@@ -45,11 +59,6 @@ jobs:
           name: ${{ steps.get_version.outputs.title }}
           prerelease: false
           body: |
-            - ### Changelog:
-
-            **Full Changelog (since last stable release)**: https://github.com/itsPLK/ps5-bdjb-autoloader/compare/${{ steps.get_version.outputs.last_stable_tag }}...${{ steps.get_version.outputs.version }}
-
-            ---
             <details>
             <summary>Bundled Binaries</summary>
 
