@@ -6,6 +6,16 @@ set -euo pipefail
 # Ensure we are in the project root
 cd "$(dirname "$0")/.."
 
+while [[ "$#" -gt 0 ]]; do
+    case "$1" in
+        --kexp-ver) KEXP_VER="$2"; shift ;;
+        *) echo "Unknown parameter passed: $1" ;;
+    esac
+    shift
+done
+
+KEXP_GITHUB_RELEASE="${KEXP_VER:-master}"
+
 DEST_DIR="payloads/poops/src/org/bdj/external"
 mkdir -p "$DEST_DIR"
 
@@ -26,8 +36,8 @@ if [ -z "$ELFLDR_URL" ]; then
 fi
 ELFLDR_FILE=$(basename "$ELFLDR_URL")
 
-echo "Fetching latest release URL for ps5-kexp..."
-KEXP_URL=$(curl -s https://api.github.com/repos/itsPLK/ps5-kexp/releases/latest | grep -o 'https://github.com/itsPLK/ps5-kexp/releases/download/[^"]*\.bin' | head -n 1)
+echo "Fetching $KEXP_GITHUB_RELEASE release URL for ps5-kexp..."
+KEXP_URL=$(curl -s https://api.github.com/repos/itsPLK/ps5-kexp/releases/$KEXP_GITHUB_RELEASE | grep -o 'https://github.com/itsPLK/ps5-kexp/releases/download/[^"]*\.bin' | head -n 1)
 if [ -z "$KEXP_URL" ]; then
     echo "Error: Could not retrieve latest release URL for ps5-kexp." >&2
     exit 1
