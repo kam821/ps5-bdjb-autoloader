@@ -75,9 +75,6 @@ public class Autoloader {
 
         Status.success("Finished");
         Status.setProgress(100, "Finished");
-        
-        try { Thread.sleep(200); } catch (Exception ignored) {}
-        killApp();
     }
 
     private static String findAutoloader() {
