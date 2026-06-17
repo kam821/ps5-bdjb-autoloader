@@ -8,11 +8,14 @@ BUILD_TYPE="dev"
 DEP_ACTION="auto"
 
 while [[ "$#" -gt 0 ]]; do
-    case $1 in
+    case "$1" in
         --stable) BUILD_TYPE="stable" ;;
         --dev) BUILD_TYPE="dev" ;;
         --build-deps|-b) DEP_ACTION="build" ;;
         --download-deps|-d) DEP_ACTION="download" ;;
+        --elfldr-ver) ELFLDR_VER="$2"; shift ;;
+        --kexp-ver) KEXP_VER="$2"; shift ;;
+        --autoloader-ver) AUTOLOADER_VER="$2"; shift ;;
         *) echo "Unknown parameter passed: $1"; exit 1 ;;
     esac
     shift
@@ -69,7 +72,7 @@ build_source_deps() {
 # Helper to download dependencies
 download_prebuilt_deps() {
     echo "=== Downloading dependencies from GitHub releases ==="
-    ./scripts/download_deps.sh
+    ./scripts/download_deps.sh --elfldr-ver "$ELFLDR_VER" --kexp-ver "$KEXP_VER" --autoloader-ver "$AUTOLOADER_VER"
 }
 
 # Resolve dependency action

@@ -6,6 +6,20 @@ set -euo pipefail
 # Ensure we are in the project root
 cd "$(dirname "$0")/.."
 
+while [[ "$#" -gt 0 ]]; do
+    case "$1" in
+        --elfldr-ver) ELFLDR_VER="$2"; shift ;;
+        --kexp-ver) KEXP_VER="$2"; shift ;;
+        --autoloader-ver) AUTOLOADER_VER="$2"; shift ;;
+        *) echo "Unknown parameter passed: $1" ;;
+    esac
+    shift
+done
+
+ELFLDR_GITHUB_RELEASE="${ELFLDR_VER:-latest}"
+KEXP_GITHUB_RELEASE="${KEXP_VER:-latest}"
+AUTOLOADER_GITHUB_RELEASE="${AUTOLOADER_VER:-latest}"
+
 DEST_DIR="payloads/poops/src/org/bdj/external"
 AUTOLOADER_DEST_DIR="payloads/autoloader"
 mkdir -p "$DEST_DIR"
@@ -17,22 +31,22 @@ if ! command -v curl &> /dev/null; then
     exit 1
 fi
 
-echo "Fetching latest release URL for ps5-elfldr..."
-ELFLDR_URL=$(curl -s https://api.github.com/repos/itsPLK/ps5-elfldr/releases/latest | grep -o 'https://github.com/itsPLK/ps5-elfldr/releases/download/[^"]*\.elf' | head -n 1)
+echo "Fetching $ELFLDR_GITHUB_RELEASE release URL for ps5-elfldr..."
+ELFLDR_URL=$(curl -s https://api.github.com/repos/itsPLK/ps5-elfldr/releases/$ELFLDR_GITHUB_RELEASE | grep -o 'https://github.com/itsPLK/ps5-elfldr/releases/download/[^"]*\.elf' | head -n 1)
 if [ -z "$ELFLDR_URL" ]; then
     echo "Error: Could not retrieve latest release URL for ps5-elfldr." >&2
     exit 1
 fi
 
-echo "Fetching latest release URL for ps5-kexp..."
-KEXP_URL=$(curl -s https://api.github.com/repos/itsPLK/ps5-kexp/releases/latest | grep -o 'https://github.com/itsPLK/ps5-kexp/releases/download/[^"]*\.bin' | head -n 1)
+echo "Fetching $KEXP_GITHUB_RELEASE release URL for ps5-kexp..."
+KEXP_URL=$(curl -s https://api.github.com/repos/itsPLK/ps5-kexp/releases/$KEXP_GITHUB_RELEASE | grep -o 'https://github.com/itsPLK/ps5-kexp/releases/download/[^"]*\.bin' | head -n 1)
 if [ -z "$KEXP_URL" ]; then
     echo "Error: Could not retrieve latest release URL for ps5-kexp." >&2
     exit 1
 fi
 
-echo "Fetching latest release URL for ps5-unified-autoloader..."
-AUTOLOADER_RELEASE_JSON=$(curl -s https://api.github.com/repos/itsPLK/ps5-unified-autoloader/releases/latest)
+echo "Fetching $AUTOLOADER_GITHUB_RELEASE release URL for ps5-unified-autoloader..."
+AUTOLOADER_RELEASE_JSON=$(curl -s https://api.github.com/repos/itsPLK/ps5-unified-autoloader/releases/$AUTOLOADER_GITHUB_RELEASE)
 AUTOLOADER_URL=$(echo "$AUTOLOADER_RELEASE_JSON" | grep -o 'https://github.com/itsPLK/ps5-unified-autoloader/releases/download/[^"]*\.elf' | head -n 1)
 if [ -z "$AUTOLOADER_URL" ]; then
     echo "Error: Could not retrieve latest release URL for ps5-unified-autoloader." >&2
